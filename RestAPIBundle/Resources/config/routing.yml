@@ -1,0 +1,29 @@
+coffee_studio_rest_api_model_get:
+    path:     /coffee.api.model/{name}/{method}/{fieldset}
+    methods: [GET]
+    defaults: { _controller: CoffeeStudioRestAPIBundle:Rest:modelGet, fieldset: "*", method: "__invoke" }
+
+coffee_studio_rest_api_model_post:
+    path:     /coffee.api.model/{name}/{method}/{fieldset}
+    methods: [POST]
+    defaults: { _controller: CoffeeStudioRestAPIBundle:Rest:modelUpdate, fieldset: "*", method: "__invoke" }
+
+coffee_studio_rest_api_util_get:
+    path:     /coffee.api.util/{name}/{method}
+    methods: [GET]
+    defaults: { _controller: CoffeeStudioRestAPIBundle:Rest:utilGet, method: "__invoke" }
+
+coffee_studio_rest_api_util_post:
+    path:     /coffee.api.util/{name}/{method}
+    methods: [POST]
+    defaults: { _controller: CoffeeStudioRestAPIBundle:Rest:utilDo , method: "__invoke" }
+
+coffee_studio_rest_api_config_get:
+    path:     /coffee.api.config/{section}/{subsection}/{param}
+    methods: [GET]
+    defaults: { _controller: CoffeeStudioRestAPIBundle:Rest:configGet, section: "*", subsection: "*", param: "*" }
+
+coffee_studio_rest_api_config_post:
+    path:     /coffee.api.config/{section}/{subsection}/{param}
+    methods: [POST]
+    defaults: { _controller: CoffeeStudioRestAPIBundle:Rest:configSet, section: "*", subsection: "*", param: "*" }
