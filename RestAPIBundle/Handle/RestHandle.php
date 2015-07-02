@@ -3,13 +3,16 @@ namespace CoffeeStudio\RestAPIBundle\Handle;
 
 abstract class RestHandle implements IRestHandle {
     private $dao;
+    private $customViewMap;
 
     /**
      * @param object $dao Data access object for REST model.
+     * @param array $viewMap Optional custom view map.
      */
-    public function __construct($dao)
+    public function __construct($dao, $viewMap=null)
     {
         $this->dao = $dao;
+        $this->customViewMap = $viewMap;
     }
 
     /**
@@ -31,6 +34,11 @@ abstract class RestHandle implements IRestHandle {
         } elseif (! $ent instanceof \Iterator) {
             $ent = (new \ArrayObject([$ent]))->getIterator();
         }
-        return new Result($ent, $this->fields());
+        return new Result($ent, $this->viewMap());
+    }
+
+    public function viewMap()
+    {
+       return $this->customViewMap ? $this->customViewMap : $this->fields();
     }
 }

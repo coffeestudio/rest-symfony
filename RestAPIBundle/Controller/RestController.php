@@ -28,17 +28,19 @@ class RestController extends Controller
         return null;
     }
 
-    private function makeModelProcedure($name, $method, $accessor=null)
+    private function makeModelProcedure($name, $method, $accessor=null, $projection=null)
     {
         $em = $this->getDoctrine()->getManager();
 //        $dao_cn = $em->getClassMetadata($name)->getName();
         $dao = $em->getRepository($name);
+        $pm = $projection ? $projection . 'Projection' : null;
+        $viewMap = $pm && method_exists($dao, $pm) ? $dao->$pm() : null;
 
         $hdl_cn = self::findInterface($dao, $method, true);
         if (! $hdl_cn) $this->e404(100);
         $hdl = null;
         try {
-            $hdl = new $hdl_cn($dao);
+            $hdl = new $hdl_cn($dao, $viewMap);
         } catch (\Exception $e) {
             $this->e404(200);
         }
@@ -101,16 +103,28 @@ class RestController extends Controller
         return new JsonResponse($jsonOutArr);
     }
 
+    private function mayBeProjection($fss)
+    {
+        if (preg_match('/@(\w+)/', $fss, $m)) {
+            return $m[1];
+        }
+        return null;
+    }
+
     public function modelGetAction($name, $method, $fieldset = '*', Request $req)
     {
-        $p = $this->makeModelProcedure($name, $method);
+        $proj = $this->mayBeProjection($fieldset);
+        if ($proj) $fieldset = '*';
+        $p = $this->makeModelProcedure($name, $method, null, $proj);
         $options = $req->query;
         return $this->makeResponse($this->callProcedure($p, $options), $fieldset);
     }
 
     public function modelUpdateAction($name, $method, $fieldset = '*', Request $req)
     {
-        $p = $this->makeModelProcedure($name, $method);
+        $proj = $this->mayBeProjection($fieldset);
+        if ($proj) $fieldset = '*';
+        $p = $this->makeModelProcedure($name, $method, null, $proj);
         $options = $req->query;
         $dataIn = $req->request;
         return $this->makeResponse($this->callProcedure($p, $options, $dataIn), $fieldset);
@@ -153,6 +167,20 @@ class RestController extends Controller
     }
 
     public function configSetAction($section = '*', $subsection = '*', $param = '*', Request $req)
+    {
+        $dataIn = $req->request;
+        return new Response('Not implemented.');
+    }
+
+    public function langGetAction($section = '*', $subsection = '*', $param = '*', Request $req)
+    {
+        $config_file = $this->get('kernel')->getRootDir() . '/config/lang.ru.yml';
+        $yaml = new Parser;
+        $data = $yaml->parse(file_get_contents($config_file));
+        return new JsonResponse($this->filterConfig($data, $section, $subsection, $param));
+    }
+
+    public function langSetAction($section = '*', $subsection = '*', $param = '*', Request $req)
     {
         $dataIn = $req->request;
         return new Response('Not implemented.');

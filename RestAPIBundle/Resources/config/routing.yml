@@ -27,3 +27,13 @@ coffee_studio_rest_api_config_post:
     path:     /coffee.api.config/{section}/{subsection}/{param}
     methods: [POST]
     defaults: { _controller: CoffeeStudioRestAPIBundle:Rest:configSet, section: "*", subsection: "*", param: "*" }
+
+coffee_studio_rest_api_lang_get:
+    path:     /coffee.api.lang/{section}/{subsection}/{param}
+    methods: [GET]
+    defaults: { _controller: CoffeeStudioRestAPIBundle:Rest:langGet, section: "*", subsection: "*", param: "*" }
+
+coffee_studio_rest_api_lang_post:
+    path:     /coffee.api.lang/{section}/{subsection}/{param}
+    methods: [POST]
+    defaults: { _controller: CoffeeStudioRestAPIBundle:Rest:langSet, section: "*", subsection: "*", param: "*" }
