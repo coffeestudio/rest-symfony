@@ -17,15 +17,12 @@ class IAdminViewDAO extends RestHandle
     public function add($accessor)
     {
         return function($dataIn) {
-            $meta = $this->getDAO()->persist();
-            print $meta;
         };
     }
 
     public function edit($accessor)
     {
         return function($id, $dataIn) {
-
         };
     }
 

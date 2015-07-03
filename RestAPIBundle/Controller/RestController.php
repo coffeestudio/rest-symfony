@@ -40,7 +40,7 @@ class RestController extends Controller
         if (! $hdl_cn) $this->e404(100);
         $hdl = null;
         try {
-            $hdl = new $hdl_cn($dao, $viewMap);
+            $hdl = new $hdl_cn($dao, $name, $viewMap);
         } catch (\Exception $e) {
             $this->e404(200);
         }

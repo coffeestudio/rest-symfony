@@ -4,15 +4,26 @@ namespace CoffeeStudio\RestAPIBundle\Handle;
 abstract class RestHandle implements IRestHandle {
     private $dao;
     private $customProjection;
+    private $entityName;
 
     /**
      * @param object $dao Data access object for REST model.
      * @param array $viewMap Optional custom view map.
      */
-    public function __construct($dao, $projection=null)
+    public function __construct($dao, $entityName, $projection=null)
     {
         $this->dao = $dao;
         $this->customProjection = $projection;
+        $this->entityName = $entityName;
+
+    }
+
+    /**
+     * @return string entity name
+     */
+    public function getEntityName()
+    {
+        return $this->entityName;
     }
 
     /**
