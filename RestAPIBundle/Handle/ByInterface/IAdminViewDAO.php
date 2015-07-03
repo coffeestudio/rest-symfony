@@ -7,7 +7,7 @@ class IAdminViewDAO extends RestHandle
 {
     public function fields()
     {
-        return ['id' => 'getId', 'title' => 'getTitle'];
+        return ['id' => 'getId: int', 'title' => 'getTitle: string'];
     }
 
     public function get($accessor)

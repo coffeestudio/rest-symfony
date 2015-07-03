@@ -5,18 +5,34 @@ class Result
 {
     private $entities;
     private $viewMap;
+    private $typeMap;
 
-    public function __construct(\Iterator $ents, array $viewMap)
+    public function __construct(\Iterator $ents, array $fMap)
     {
         $this->entities = $ents;
-        $this->viewMap = $viewMap;
+        list ($this->viewMap, $this->typeMap) = self::splitTypes($fMap);
+    }
+
+    private static function splitTypes($fMap)
+    {
+        $vs = [];
+        $ts = [];
+        foreach ($fMap as $k => $v) {
+            if (preg_match('/^(\w+)\s*:\s*(\w+)$/', $v, $m)) {
+                $vs[$k] = $m[1];
+                $ts[$k] = $m[2];
+            } else {
+                $vs[$k] = $v;
+            }
+        }
+        return [$vs, $ts];
     }
 
     /**
      * @param array $fieldset Array of field names to return in output array.
      * @return array Representation of the model rows.
      */
-    function apply($fieldset = null)
+    public function apply($fieldset = null)
     {
         $a = [];
         $fields = $fieldset ? array_intersect_key($this->viewMap, array_flip($fieldset)) : $this->viewMap;
@@ -26,7 +42,12 @@ class Result
         return $a;
     }
 
-    function __invoke($fieldset = null)
+    public function getTypes()
+    {
+        return $this->typeMap;
+    }
+
+    public function __invoke($fieldset = null)
     {
         return $this->apply($fieldset);
     }

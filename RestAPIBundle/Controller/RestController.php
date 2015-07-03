@@ -94,7 +94,11 @@ class RestController extends Controller
             $jsonOutArr = ['type' => 'error', 'message' => json_encode($restResult->getMessage())];
         } elseif ($restResult instanceof Result) {
             $fieldset = $fieldset == '*' ? null : explode(',', $fieldset);
+            $types = $restResult->getTypes();
             $jsonOutArr = ['type' => 'model', 'model' => $restResult($fieldset)];
+            if (! empty($types)) {
+                $jsonOutArr['types'] = $types;
+            }
         } elseif (is_null($restResult)) {
             $jsonOutArr = ['type' => 'void'];
         } else {
