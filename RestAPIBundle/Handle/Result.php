@@ -7,25 +7,21 @@ class Result
     private $viewMap;
     private $typeMap;
 
-    public function __construct(\Iterator $ents, array $fMap)
+    public function __construct(\Iterator $ents, array $projection)
     {
         $this->entities = $ents;
-        list ($this->viewMap, $this->typeMap) = self::splitTypes($fMap);
+        list ($this->viewMap, $this->typeMap) = self::splitProjection($projection);
     }
 
-    private static function splitTypes($fMap)
+    private static function splitProjection($p)
     {
-        $vs = [];
-        $ts = [];
-        foreach ($fMap as $k => $v) {
-            if (preg_match('/^(\w+)\s*:\s*(\w+)$/', $v, $m)) {
-                $vs[$k] = $m[1];
-                $ts[$k] = $m[2];
-            } else {
-                $vs[$k] = $v;
-            }
+        $viewMap = [];
+        $typeMap = [];
+        foreach ($p as $k => $pm) {
+            $viewMap[$k] = $pm->getter;
+            $typeMap[$k] = $pm->type;
         }
-        return [$vs, $ts];
+        return [$viewMap, $typeMap];
     }
 
     /**

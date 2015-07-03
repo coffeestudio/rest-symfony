@@ -9,12 +9,12 @@ interface IRestHandle {
     public function __construct($dao, $viewMap=null);
 
     /**
-     * @return array Map JSON fields to interface getters.
+     * @return array Map JSON fields to interface getters/setters (default projection).
      */
-    public function fields();
+    public function projection();
 
     /**
-     * @return array Map JSON fields to interface getters. Returned custom view map if supplied, otherwise fields().
+     * @return array Map JSON fields to interface getters. Returned custom projection if supplied, otherwise projection().
      */
-    public function viewMap();
+    public function getProjection();
 }

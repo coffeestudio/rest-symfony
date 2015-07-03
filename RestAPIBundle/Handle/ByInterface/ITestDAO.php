@@ -1,13 +1,14 @@
 <?php
 namespace CoffeeStudio\RestAPIBundle\Handle\ByInterface;
 
+use CoffeeStudio\RestAPIBundle\Handle\G;
 use CoffeeStudio\RestAPIBundle\Handle\RestHandle;
 
 class ITestDAO extends RestHandle
 {
-    public function fields()
+    public function projection()
     {
-        return ['testMessage' => 'getTestMessage'];
+        return ['testMessage' => G::S('getTestMessage')];
     }
 
     public function getTest($accessor)
