@@ -49,6 +49,16 @@ class IAdminViewDAO extends RestHandle
         };
     }
 
+    public function delete($accessor)
+    {
+        return function($id) {
+            $s = $this->getDAO()->find($id);
+            $this->getEntityManager()->remove($s);
+            $this->getEntityManager()->flush();
+            return $this->mkResult($s);
+        };
+    }
+
     public function get($accessor)
     {
         return function ($id) {
