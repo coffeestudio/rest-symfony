@@ -17,12 +17,24 @@ class IAdminViewDAO extends RestHandle
     public function add($accessor)
     {
         return function($dataIn) {
+            if (empty($dataIn)) return null;
+            $ecn = $this->getEntityName();
+            $newe = new $ecn;
+            $this->applyData($newe, $dataIn);
+            $this->getEntityManager()->persist($newe);
+            $this->getEntityManager()->flush();
+            return $this->mkResult($newe);
         };
     }
 
     public function edit($accessor)
     {
         return function($id, $dataIn) {
+            $s = $this->getDAO()->find($id);
+            $this->applyData($s, $dataIn);
+            $this->getEntityManager()->merge($s);
+            $this->getEntityManager()->flush();
+            return $this->mkResult($s);
         };
     }
 

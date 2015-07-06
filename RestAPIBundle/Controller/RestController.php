@@ -31,16 +31,16 @@ class RestController extends Controller
     private function makeModelProcedure($name, $method, $accessor=null, $projection=null)
     {
         $em = $this->getDoctrine()->getManager();
-//        $dao_cn = $em->getClassMetadata($name)->getName();
+        $ecn = $em->getClassMetadata($name)->getName();
         $dao = $em->getRepository($name);
         $pm = $projection ? $projection . 'Projection' : null;
-        $viewMap = $pm && method_exists($dao, $pm) ? $dao->$pm() : null;
+        $projMap = $pm && method_exists($dao, $pm) ? $dao->$pm() : null;
 
         $hdl_cn = self::findInterface($dao, $method, true);
         if (! $hdl_cn) $this->e404(100);
         $hdl = null;
         try {
-            $hdl = new $hdl_cn($dao, $name, $viewMap);
+            $hdl = new $hdl_cn($dao, $ecn, $em, $projMap);
         } catch (\Exception $e) {
             $this->e404(200);
         }
@@ -115,6 +115,17 @@ class RestController extends Controller
         return null;
     }
 
+    private static function getDataIn($req)
+    {
+        $dataIn = [];
+        if (strpos($req->headers->get('Content-Type'), 'application/json') === 0) {
+            $dataIn = json_decode($req->getContent(), true);
+        } else {
+            $dataIn = $req->request->all();
+        }
+        return $dataIn;
+    }
+
     public function modelGetAction($name, $method, $fieldset = '*', Request $req)
     {
         $proj = $this->mayBeProjection($fieldset);
@@ -130,7 +141,7 @@ class RestController extends Controller
         if ($proj) $fieldset = '*';
         $p = $this->makeModelProcedure($name, $method, null, $proj);
         $options = $req->query;
-        $dataIn = $req->request;
+        $dataIn = self::getDataIn($req);
         return $this->makeResponse($this->callProcedure($p, $options, $dataIn), $fieldset);
     }
 
@@ -145,7 +156,7 @@ class RestController extends Controller
     {
         $p = $this->makeUtilProcedure($name, $method);
         $options = $req->query;
-        $dataIn = $req->request;
+        $dataIn = self::getDataIn($req);
         return $this->makeResponse($this->callProcedure($p, $options, $dataIn));
     }
 
@@ -172,7 +183,7 @@ class RestController extends Controller
 
     public function configSetAction($section = '*', $subsection = '*', $param = '*', Request $req)
     {
-        $dataIn = $req->request;
+        $dataIn = self::getDataIn($req);
         return new Response('Not implemented.');
     }
 
@@ -186,7 +197,7 @@ class RestController extends Controller
 
     public function langSetAction($section = '*', $subsection = '*', $param = '*', Request $req)
     {
-        $dataIn = $req->request;
+        $dataIn = self::getDataIn($req);
         return new Response('Not implemented.');
     }
 
