@@ -22,6 +22,14 @@ abstract class RestHandle implements IRestHandle {
         $this->entityManager = $em;
     }
 
+    public function extendProjection($k, $pMap)
+    {
+        if (! $this->customProjection) {
+            $this->customProjection = $this->projection();
+        }
+        $this->customProjection[$k] = $pMap;
+    }
+
     /**
      * @return string entity name
      */

@@ -14,6 +14,15 @@ class IAdminViewDAO extends RestHandle
         ];
     }
 
+    public function schema($accessor)
+    {
+        return function() {
+            $ecn = $this->getEntityName();
+            $newe = new $ecn;
+            return $this->mkResult($newe);
+        };
+    }
+
     public function add($accessor)
     {
         return function($dataIn) {
@@ -23,6 +32,8 @@ class IAdminViewDAO extends RestHandle
             $this->applyData($newe, $dataIn);
             $this->getEntityManager()->persist($newe);
             $this->getEntityManager()->flush();
+            $dproj = $this->projection();
+            $this->extendProjection('id', $dproj['id']);
             return $this->mkResult($newe);
         };
     }
