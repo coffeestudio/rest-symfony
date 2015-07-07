@@ -33,7 +33,13 @@ class Result
         $a = [];
         $fields = $fieldset ? array_intersect_key($this->viewMap, array_flip($fieldset)) : $this->viewMap;
         foreach ($this->entities as $row) {
-            $a[] = array_map(function ($m) use ($row) { return $row->$m(); }, $fields);
+            $a[] = array_map(function ($m) use ($row) {
+                if ($m[0] == '!') {
+                    $m = substr($m, 1);
+                    return ! $row->$m();
+                }
+                return $row->$m();
+            }, $fields);
         }
         return $a;
     }
