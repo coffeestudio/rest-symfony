@@ -8,6 +8,10 @@ coffee_studio_rest_api_model_post:
     methods: [POST]
     defaults: { _controller: CoffeeStudioRestAPIBundle:Rest:modelUpdate, fieldset: "*", method: "__invoke" }
 
+coffee_studio_rest_api_auth:
+    path:     /coffee.api.auth/{name}/{method}
+    defaults: { _controller: CoffeeStudioRestAPIBundle:Rest:auth, method: "__invoke" }
+
 coffee_studio_rest_api_util_get:
     path:     /coffee.api.util/{name}/{method}
     methods: [GET]

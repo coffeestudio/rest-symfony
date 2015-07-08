@@ -14,6 +14,7 @@ use Symfony\Component\Yaml\Parser;
 class RestController extends Controller
 {
     const HARNESS_NS = 'CoffeeStudio\\Harness\\';
+    const SKEY = 'coffee.api.accessor';
 
     private static function findInterface($classn, $method, $dao = false)
     {
@@ -74,7 +75,9 @@ class RestController extends Controller
             $n = $p->getName();
             if ($n == 'dataIn') {
                 $args[] = $dataIn;
-            } elseif ($options->has($n)) {
+            } elseif (is_array($options) && isset($options[$n])) {
+                $args[] = $options[$n];
+            } elseif ($options && $options->has($n)) {
                 $args[] = $options->get($n);
             } else {
                 $args[] = $p->isDefaultValueAvailable() ? $p->getDefaultValue() : null;
@@ -143,6 +146,51 @@ class RestController extends Controller
         $options = $req->query;
         $dataIn = self::getDataIn($req);
         return $this->makeResponse($this->callProcedure($p, $options, $dataIn), $fieldset);
+    }
+
+    /* FIXME: Should use named accessors */
+    private function getFirstAccessor(Request $req)
+    {
+        $session = $req->getSession();
+        $accessors = $session->get(self::SKEY);
+        if (empty($accessors)) return null;
+        list ($name, $accessor) = each($accessors);
+        $p = $this->makeModelProcedure($name, 'getUser');
+        return $this->callProcedure($p, $accessor);
+    }
+
+    public function authAction($name, $method, Request $req)
+    {
+        $methods = ['login', 'logout', 'check'];
+        if (! in_array($method, $methods)) $this->e404();
+        $session = $req->getSession();
+
+        if ($method == 'check') {
+            $accessor = $session->get(self::SKEY . '/' . $name);
+            if (empty($accessor)) return $this->makeResponse(null);
+            $p = $this->makeModelProcedure($name, 'getUser');
+            return $this->makeResponse($this->callProcedure($p, $accessor));
+        }
+
+        if ($method == 'logout') {
+            $session->remove(self::SKEY . '/' . $name);
+            return $this->makeResponse(true);
+        }
+
+        $p = $this->makeModelProcedure($name, $method);
+        $options = $req->query;
+        $dataIn = self::getDataIn($req);
+        $result = $this->callProcedure($p, $options, $dataIn);
+
+        if ($method == 'login' && $result instanceof Result) {
+            $as = $result();
+            if (! empty($as)) {
+                $accessor = $as[0];
+                $session->set(self::SKEY . '/' . $name, $accessor);
+            }
+        }
+
+        return $this->makeResponse($result);
     }
 
     public function utilGetAction($name, $method, Request $req)
