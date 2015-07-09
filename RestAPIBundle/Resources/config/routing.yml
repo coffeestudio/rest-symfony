@@ -12,6 +12,11 @@ coffee_studio_rest_api_auth:
     path:     /coffee.api.auth/{name}/{method}
     defaults: { _controller: CoffeeStudioRestAPIBundle:Rest:auth, method: "__invoke" }
 
+coffee_studio_rest_api_features:
+    path:     /coffee.api.features/{name}
+    methods: [GET]
+    defaults: { _controller: CoffeeStudioRestAPIBundle:Rest:getFeatures }
+
 coffee_studio_rest_api_util_get:
     path:     /coffee.api.util/{name}/{method}
     methods: [GET]

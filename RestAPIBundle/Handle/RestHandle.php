@@ -1,10 +1,14 @@
 <?php
 namespace CoffeeStudio\RestAPIBundle\Handle;
 
+use CoffeeStudio\RestAPIBundle\AccessControl;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\PersistentCollection;
 
 abstract class RestHandle implements IRestHandle {
+    use AccessControl;
+
     private $dao;
     private $customProjection;
     private $entityName;
@@ -62,6 +66,8 @@ abstract class RestHandle implements IRestHandle {
     {
         if (is_array($ent)) {
             $ent = (new \ArrayObject($ent))->getIterator();
+        } elseif ($ent instanceof PersistentCollection) {
+            $ent = $ent->getIterator();
         } elseif (! $ent instanceof \Iterator) {
             $ent = (new \ArrayObject([$ent]))->getIterator();
         }

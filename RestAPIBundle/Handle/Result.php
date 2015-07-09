@@ -24,6 +24,11 @@ class Result
         return [$viewMap, $typeMap];
     }
 
+    public function flatten()
+    {
+        /* TODO: implement */
+    }
+
     /**
      * @param array $fieldset Array of field names to return in output array.
      * @return array Representation of the model rows.

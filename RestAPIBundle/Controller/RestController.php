@@ -156,7 +156,36 @@ class RestController extends Controller
         if (empty($accessors)) return null;
         list ($name, $accessor) = each($accessors);
         $p = $this->makeModelProcedure($name, 'getUser');
-        return $this->callProcedure($p, $accessor);
+        $result = $this->callProcedure($p, $accessor);
+        if (! $result instanceof Result) return null;
+        /* TODO: Return entity */
+        return $result;
+    }
+
+    public function getFeaturesAction($name)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $ecn = $em->getClassMetadata($name)->getName();
+        $dao = $em->getRepository($name);
+        $eimpl = array_values(array_filter(array_map(
+            [$this, 'matchHarnessNS'],
+            array_keys(class_implements($ecn, false))
+        )));
+        $dimpl = array_values(array_filter(array_map(
+            [$this, 'matchHarnessNS'],
+            array_keys(class_implements($dao, false))
+        )));
+        return new JsonResponse(['entity' => $eimpl, 'dao' => $dimpl]);
+    }
+    private function matchHarnessNS($cn)
+    {
+        $find = 'CoffeeStudio\\Harness\\';
+        $len = 21;
+        if (strpos($cn, $find) === 0) {
+            return substr($cn, $len);
+        } else {
+            return null;
+        }
     }
 
     public function authAction($name, $method, Request $req)
