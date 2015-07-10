@@ -8,6 +8,7 @@ use CoffeeStudio\RestAPIBundle\Helper\Image;
 /* Adapted legacy ajax file manager from coffee framework */
 class FileManager implements IRestUtil {
     use DirConf;
+    use AccessControl;
 
     private $cwn, $rcwn;
     private $privated = true;
