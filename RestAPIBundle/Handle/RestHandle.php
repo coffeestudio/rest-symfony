@@ -64,6 +64,8 @@ abstract class RestHandle implements IRestHandle {
      */
     protected function mkResult($ent)
     {
+        if (is_null($ent)) return $ent;
+
         if (is_array($ent)) {
             $ent = (new \ArrayObject($ent))->getIterator();
         } elseif ($ent instanceof PersistentCollection) {

@@ -29,17 +29,21 @@ class IWithAttachmentsDAO extends RestHandle
     public function addAttachment($accessor)
     {
         return function ($entityId, $dataIn) {
-            $defaults = ['type' => null, 'path' => null, 'title' => '', 'comment' => '', 'sort' => 50, 'isMain' => false];
-            list ($type, $path, $title, $comment, $sort, $isMain) = $defaults + array_intersect_key($dataIn, $defaults);
-            return $this->mkResult($this->getDAO()->addAttachment($entityId, $type, $path, $title, $comment, $sort, $isMain));
+            $defaults = ['path' => null, 'title' => '', 'comment' => '', 'sort' => 50, 'isMain' => false];
+            list ($path, $title, $comment, $sort, $isMain) = array_values (
+                array_merge($defaults, array_intersect_key($dataIn, $defaults))
+            );
+            return $this->mkResult($this->getDAO()->addAttachment($entityId, $path, $title, $comment, $sort, $isMain));
         };
     }
     public function editAttachment($accessor)
     {
         return function ($entityId, $attId, $dataIn) {
-            $defaults = array_fill_keys(['type', 'path', 'title', 'comment', 'sort', 'isMain'], null);
-            list ($type, $path, $title, $comment, $sort, $isMain) = $defaults + array_intersect_key($dataIn, $defaults);
-            return $this->mkResult($this->getDAO()->editAttachment($entityId, $attId, $type, $path, $title, $comment, $sort, $isMain));
+            $defaults = array_fill_keys(['path', 'title', 'comment', 'sort', 'isMain'], null);
+            list ($path, $title, $comment, $sort, $isMain) = array_values (
+                array_merge($defaults, array_intersect_key($dataIn, $defaults))
+            );
+            return $this->mkResult($this->getDAO()->editAttachment($entityId, $attId, $path, $title, $comment, $sort, $isMain));
         };
     }
     public function delAttachment($accessor)
