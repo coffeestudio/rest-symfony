@@ -17,6 +17,7 @@ class ITreeDAO extends RestHandle {
     }
 
     public function get($accessor = null) {
+        $this->restricted($accessor);
         return function ($id) {
             if (empty($id)) return null;
             $s = $this->getDAO()->get($id);
@@ -25,6 +26,7 @@ class ITreeDAO extends RestHandle {
     }
 
     public function getByPath($accessor = null) {
+        $this->restricted($accessor);
         return function ($path) {
             if (empty($path)) return null;
             $s = $this->getDAO()->getByPath($path);
@@ -33,6 +35,7 @@ class ITreeDAO extends RestHandle {
     }
 
     public function getTopLevel($accessor = null) {
+        $this->restricted($accessor);
         return function () {
             $s = $this->getDAO()->getTopLevel();
             return $this->mkResult($s);
@@ -40,6 +43,7 @@ class ITreeDAO extends RestHandle {
     }
 
     public function getChildrenOf($accessor = null) {
+        $this->restricted($accessor);
         return function ($id) {
             if (empty($id)) return null;
             $s = $this->getDAO()->getChildren($id);
@@ -48,6 +52,7 @@ class ITreeDAO extends RestHandle {
     }
 
     public function getParentOf($accessor = null) {
+        $this->restricted($accessor);
         return function ($id) {
             if (empty($id)) return null;
             $s = $this->getDAO()->getParent($id);

@@ -8,6 +8,7 @@ class IAdminSectionedViewDAO extends IAdminViewDAO
 {
     public function getListBySection($accessor)
     {
+        $this->restricted($accessor);
         return function ($section) {
             return $this->mkResult($this->getDAO()->getListBySection($section));
         };

@@ -9,8 +9,7 @@ class Image implements IRestUtil {
     const IMAGE_HELPER_CLASS = 'CoffeeStudio\RestAPIBundle\Helper\Image';
 
     public function __invoke($accessor=null) {
-        // TODO: Fixme
-//        if ($this->restricted($accessor));
+        $this->restricted($accessor);
         return function ($src, $size=null, $flags=null, $pos="0% 0%") {
             if ($flags) {
                 $flags = array_reduce(preg_split('/[|,]/', $flags, -1, PREG_SPLIT_NO_EMPTY),

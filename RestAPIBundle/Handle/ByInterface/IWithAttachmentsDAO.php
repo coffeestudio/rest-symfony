@@ -14,7 +14,7 @@ class IWithAttachmentsDAO extends RestHandle
         , 'title' => G::S('getTitle')
         , 'comment' => G::S('getComment')
         , 'sort' => G::S('getSort')
-        , 'is_main' => G::S('isMain')
+        , 'isMain' => G::S('isMain')
         , 'type' => G::S('getFileType')
         , 'path' => G::S('getFilePath')
         ];
@@ -22,12 +22,14 @@ class IWithAttachmentsDAO extends RestHandle
 
     public function getAttachmentsById($accessor)
     {
+        $this->restricted($accessor);
         return function ($entityId) {
             return $this->mkResult($this->getDAO()->getAttachmentsById($entityId));
         };
     }
     public function addAttachment($accessor)
     {
+        $this->restricted($accessor);
         return function ($entityId, $dataIn) {
             $defaults = ['path' => null, 'title' => '', 'comment' => '', 'sort' => 50, 'isMain' => false];
             list ($path, $title, $comment, $sort, $isMain) = array_values (
@@ -38,6 +40,7 @@ class IWithAttachmentsDAO extends RestHandle
     }
     public function editAttachment($accessor)
     {
+        $this->restricted($accessor);
         return function ($entityId, $attId, $dataIn) {
             $defaults = array_fill_keys(['path', 'title', 'comment', 'sort', 'isMain'], null);
             list ($path, $title, $comment, $sort, $isMain) = array_values (
@@ -48,6 +51,7 @@ class IWithAttachmentsDAO extends RestHandle
     }
     public function delAttachment($accessor)
     {
+        $this->restricted($accessor);
         return function ($entityId, $attId, $dataIn) {
             return $this->mkResult($this->getDAO()->delAttachment($entityId, $attId));
         };

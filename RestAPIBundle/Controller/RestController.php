@@ -2,6 +2,7 @@
 
 namespace CoffeeStudio\RestAPIBundle\Controller;
 
+use CoffeeStudio\RestAPIBundle\Entity\RootAccessor;
 use CoffeeStudio\RestAPIBundle\Handle\IRestHandle;
 use CoffeeStudio\RestAPIBundle\Handle\Result;
 use CoffeeStudio\RestAPIBundle\Util\IRestUtil;
@@ -133,7 +134,8 @@ class RestController extends Controller
     {
         $proj = $this->mayBeProjection($fieldset);
         if ($proj) $fieldset = '*';
-        $p = $this->makeModelProcedure($name, $method, null, $proj);
+        $accessor = $this->getFirstAccessor($req);
+        $p = $this->makeModelProcedure($name, $method, $accessor, $proj);
         $options = $req->query;
         return $this->makeResponse($this->callProcedure($p, $options), $fieldset);
     }
@@ -142,7 +144,8 @@ class RestController extends Controller
     {
         $proj = $this->mayBeProjection($fieldset);
         if ($proj) $fieldset = '*';
-        $p = $this->makeModelProcedure($name, $method, null, $proj);
+        $accessor = $this->getFirstAccessor($req);
+        $p = $this->makeModelProcedure($name, $method, $accessor, $proj);
         $options = $req->query;
         $dataIn = self::getDataIn($req);
         return $this->makeResponse($this->callProcedure($p, $options, $dataIn), $fieldset);
@@ -154,9 +157,9 @@ class RestController extends Controller
         $session = $req->getSession();
         $accessors = $session->get(self::SKEY);
         if (empty($accessors)) return null;
-        list ($name, $accessor) = each($accessors);
-        $p = $this->makeModelProcedure($name, 'getUser');
-        $result = $this->callProcedure($p, $accessor);
+        list ($name, $userId) = each($accessors);
+        $p = $this->makeModelProcedure($name, 'getUser', new RootAccessor);
+        $result = $this->callProcedure($p, ['id' => $userId]);
         if (! $result instanceof Result) return null;
         /* TODO: Return entity */
         return $result;
@@ -193,20 +196,25 @@ class RestController extends Controller
         $methods = ['login', 'logout', 'check'];
         if (! in_array($method, $methods)) $this->e404();
         $session = $req->getSession();
+        $accessor = $this->getFirstAccessor($req);
+        $astorage = $session->get(self::SKEY);
 
         if ($method == 'check') {
-            $accessor = $session->get(self::SKEY . '/' . $name);
-            if (empty($accessor)) return $this->makeResponse(null);
-            $p = $this->makeModelProcedure($name, 'getUser');
-            return $this->makeResponse($this->callProcedure($p, $accessor));
+            if (empty($astorage)) return $this->makeResponse(null);
+            $userId = isset($astorage[$name]) ? $astorage[$name] : null;
+            if (empty($userId)) return $this->makeResponse(null);
+            $p = $this->makeModelProcedure($name, 'getUser', $accessor);
+            return $this->makeResponse($this->callProcedure($p, ['id' => $userId]));
         }
 
         if ($method == 'logout') {
-            $session->remove(self::SKEY . '/' . $name);
+            if (empty($astorage)) return $this->makeResponse(null);
+            unset($astorage[$name]);
+            $session->set(self::SKEY, $astorage);
             return $this->makeResponse(true);
         }
 
-        $p = $this->makeModelProcedure($name, $method);
+        $p = $this->makeModelProcedure($name, $method, $accessor);
         $options = $req->query;
         $dataIn = self::getDataIn($req);
         $result = $this->callProcedure($p, $options, $dataIn);
@@ -214,8 +222,10 @@ class RestController extends Controller
         if ($method == 'login' && $result instanceof Result) {
             $as = $result();
             if (! empty($as)) {
-                $accessor = $as[0];
-                $session->set(self::SKEY . '/' . $name, $accessor);
+                $userId = $as[0]['id'];
+                if (empty($astorage)) $astorage = [];
+                $astorage[$name] = $userId;
+                $session->set(self::SKEY, $astorage);
             }
         }
 
@@ -224,14 +234,16 @@ class RestController extends Controller
 
     public function utilGetAction($name, $method, Request $req)
     {
-        $p = $this->makeUtilProcedure($name, $method);
+        $accessor = $this->getFirstAccessor($req);
+        $p = $this->makeUtilProcedure($name, $method, $accessor);
         $options = $req->query;
         return $this->makeResponse($this->callProcedure($p, $options));
     }
 
     public function utilDoAction($name, $method, Request $req)
     {
-        $p = $this->makeUtilProcedure($name, $method);
+        $accessor = $this->getFirstAccessor($req);
+        $p = $this->makeUtilProcedure($name, $method, $accessor);
         $options = $req->query;
         $dataIn = self::getDataIn($req);
         return $this->makeResponse($this->callProcedure($p, $options, $dataIn));

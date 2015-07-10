@@ -27,6 +27,7 @@ class FileManager implements IRestUtil {
 
     public function ls($accessor)
     {
+        $this->restricted($accessor);
         return function ($path) { $this->setCWN($path);
             $dh = @ opendir($this->cwn);
             if (!$dh) {
@@ -77,6 +78,7 @@ class FileManager implements IRestUtil {
     }
 
     function rm($accessor) {
+        $this->restricted($accessor);
         return function ($path) { $this->setCWN($path);
 //            $res = new Res;
 //            $res->getByPath($this->rcwn);
@@ -86,6 +88,7 @@ class FileManager implements IRestUtil {
     }
 
     function mkdir($accessor) {
+        $this->restricted($accessor);
         return function ($path) { $this->setCWN($path);
             $json = array('status' => 0, 'message' => '');
             $ok = mkdir($this->cwn, 0777, true);
@@ -100,18 +103,21 @@ class FileManager implements IRestUtil {
     }
 
     function previewIcon($accessor) {
+        $this->restricted($accessor);
         return function ($path) { $this->setCWN($path);
             return $this->preview('18x18');
         };
     }
 
     function previewBig($accessor) {
+        $this->restricted($accessor);
         return function ($path) { $this->setCWN($path);
             return $this->preview('1024x');
         };
     }
 
     function preview($accessor) {
+        $this->restricted($accessor);
         return function ($path, $size='250x250') { $this->setCWN($path);
             $mime = self::getMime($this->cwn);
             $result = array('type' => $mime[0]);
@@ -131,6 +137,7 @@ class FileManager implements IRestUtil {
     }
 
     function upload($accessor) {
+        $this->restricted($accessor);
         return function ($path) { $this->setCWN($path);
             $test = trim($this->rcwn, '/');
             if (empty($test)) {

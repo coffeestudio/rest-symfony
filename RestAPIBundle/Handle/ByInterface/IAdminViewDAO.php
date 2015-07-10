@@ -16,6 +16,7 @@ class IAdminViewDAO extends RestHandle
 
     public function schema($accessor)
     {
+        $this->restricted($accessor);
         return function() {
             $ecn = $this->getEntityName();
             $newe = new $ecn;
@@ -25,6 +26,7 @@ class IAdminViewDAO extends RestHandle
 
     public function add($accessor)
     {
+        $this->restricted($accessor);
         return function($dataIn) {
             if (empty($dataIn)) return null;
             $ecn = $this->getEntityName();
@@ -40,6 +42,7 @@ class IAdminViewDAO extends RestHandle
 
     public function edit($accessor)
     {
+        $this->restricted($accessor);
         return function($id, $dataIn) {
             $s = $this->getDAO()->find($id);
             $this->applyData($s, $dataIn);
@@ -51,6 +54,7 @@ class IAdminViewDAO extends RestHandle
 
     public function delete($accessor)
     {
+        $this->restricted($accessor);
         return function($id) {
             $s = $this->getDAO()->find($id);
             $this->getEntityManager()->remove($s);
@@ -61,6 +65,7 @@ class IAdminViewDAO extends RestHandle
 
     public function get($accessor)
     {
+        $this->restricted($accessor);
         return function ($id) {
             return $this->mkResult($this->getDAO()->get($id));
         };
@@ -68,6 +73,7 @@ class IAdminViewDAO extends RestHandle
 
     public function getList($accessor)
     {
+        $this->restricted($accessor);
         return function () {
             return $this->mkResult($this->getDAO()->getList());
         };
@@ -75,6 +81,7 @@ class IAdminViewDAO extends RestHandle
 
     public function listViewFields($accessor)
     {
+        $this->restricted($accessor);
         return function () {
             return $this->getDAO()->listViewFields();
         };
@@ -82,6 +89,7 @@ class IAdminViewDAO extends RestHandle
 
     public function editViewFields($accessor)
     {
+        $this->restricted($accessor);
         return function () {
             return $this->getDAO()->editViewFields();
         };

@@ -16,6 +16,7 @@ class IUserDAO extends RestHandle
 
     public function getUser($accessor)
     {
+        $this->restricted($accessor);
         return function ($id) {
             return $this->mkResult($this->getDAO()->getUser($id));
         };
