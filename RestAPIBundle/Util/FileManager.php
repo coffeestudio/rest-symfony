@@ -1,6 +1,7 @@
 <?php
 namespace CoffeeStudio\RestAPIBundle\Util;
 
+use CoffeeStudio\RestAPIBundle\AccessControl;
 use CoffeeStudio\RestAPIBundle\DirConf;
 use CoffeeStudio\RestAPIBundle\Helper\Upload;
 use CoffeeStudio\RestAPIBundle\Helper\Image;
