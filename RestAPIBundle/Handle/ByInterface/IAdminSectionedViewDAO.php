@@ -6,6 +6,18 @@ use CoffeeStudio\RestAPIBundle\Handle\RestHandle;
 
 class IAdminSectionedViewDAO extends IAdminViewDAO
 {
+
+    public function schema($accessor)
+    {
+        $this->restricted($accessor);
+        return function($section) {
+            $ecn = $this->getEntityName();
+            $newe = new $ecn;
+            $newe->setSectionId($section);
+            return $this->mkResult($newe);
+        };
+    }
+
     public function getListBySection($accessor)
     {
         $this->restricted($accessor);
