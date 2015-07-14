@@ -50,8 +50,9 @@ class Result
                 if ($m[0] == '!') {
                     $m = substr($m, 1);
                     $value = ! $row->$m();
+                } else {
+                    $value = $row->$m();
                 }
-                $value = $row->$m();
                 return $this->setDefaults && is_null($value) ? $pm->default : $value;
             }, $fields);
         }

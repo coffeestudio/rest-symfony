@@ -46,8 +46,9 @@ class ITreeDAO extends RestHandle {
         $this->restricted($accessor);
         return function ($id) {
             if (empty($id)) return null;
-            $s = $this->getDAO()->getChildren($id);
-            return $this->mkResult($s);
+            $s = $this->getDAO()->get($id);
+            $children = $s->getChildren();
+            return $this->mkResult($children);
         };
     }
 
