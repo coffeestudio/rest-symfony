@@ -20,7 +20,7 @@ class IAdminViewDAO extends RestHandle
         return function() {
             $ecn = $this->getEntityName();
             $newe = new $ecn;
-            return $this->mkResult($newe);
+            return $this->mkResult($newe, true);
         };
     }
 

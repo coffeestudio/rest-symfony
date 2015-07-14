@@ -14,7 +14,7 @@ class IAdminSectionedViewDAO extends IAdminViewDAO
             $ecn = $this->getEntityName();
             $newe = new $ecn;
             $newe->setSectionId($section);
-            return $this->mkResult($newe);
+            return $this->mkResult($newe, true);
         };
     }
 

@@ -62,7 +62,7 @@ abstract class RestHandle implements IRestHandle {
      * @param $ent
      * @return Result
      */
-    protected function mkResult($ent)
+    protected function mkResult($ent, $setDefaults = false)
     {
         if (is_null($ent)) return $ent;
 
@@ -73,7 +73,7 @@ abstract class RestHandle implements IRestHandle {
         } elseif (! $ent instanceof \Iterator) {
             $ent = (new \ArrayObject([$ent]))->getIterator();
         }
-        return new Result($ent, $this->getProjection());
+        return new Result($ent, $this->getProjection(), $setDefaults);
     }
 
     public function getProjection()
