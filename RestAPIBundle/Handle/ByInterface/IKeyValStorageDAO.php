@@ -29,6 +29,22 @@ class IKeyValStorageDAO extends RestHandle
         };
     }
 
+    public function updateStorage($accessor)
+    {
+        $this->restricted($accessor);
+        return function ($dataIn) {
+            $dao = $this->getDAO();
+            $em = $this->getEntityManager();
+            foreach ($dataIn as $id => $v) {
+                $s = $dao->find($id);
+                $s->setValue($v);
+                $em->merge($s);
+            }
+            $em->flush();
+            return true;
+        };
+    }
+
     public function getList($accessor)
     {
         $this->restricted($accessor);
